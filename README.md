@@ -1,1 +1,21 @@
-"# Ivapeo_inventario" 
+# Ivapeo_inventario
+
+## variables de entorno
+ODOO_URL =
+TOKEN_PATH =
+SEARCH_PATH = 
+CREATE_PATH =
+ 
+ODOO_CLIENT_ID =
+ODOO_CLIENT_SECRET =
+
+OPENAI_API_KEY =
+
+TWILIO_ACCOUNT_SID = 
+TWILIO_AUTH_TOKEN =
+
+IVAPEO_ASSISTANT_ID =
+
+DATABASE_URL =
+
+BOT_NUMBER =
