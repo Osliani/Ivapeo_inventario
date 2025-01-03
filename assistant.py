@@ -96,7 +96,7 @@ class Assistant():
 						if user_id:
 							try:
 								response = requests.post (
-									url = f"{self.TOOLS_URL}/{tool.function.name}/", 
+									url = f"{self.TOOLS_URL}/{tool.function.name}/{user_id}", 
 									headers = {'Content-Type': 'application/json'}, 
 									data = tool.function.arguments,
 								)
@@ -141,7 +141,7 @@ if __name__ == "__main__":
     TOOLS_URL = os.getenv('TOOLS_API_URL')
     
     response = requests.post (
-        url = f"{TOOLS_URL}/get_product_details/", 
+        url = "http://127.0.0.1:8000/get_products/34936069261", 
         headers = {'Content-Type': 'application/json'}, 
         data = json.dumps(args)
     )

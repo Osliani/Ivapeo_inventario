@@ -34,6 +34,7 @@ def crear_app():
         try:
             jumo_bot = Assistant('IVAPEO_BOT', IVAPEO_ASSISTANT_ID, "http://127.0.0.1:8000")
             ans, status = jumo_bot.submit_message(incoming_msg, user_number, thread_id)
+            print(status)
             
         except Exception as error:
             print(f"Error: {error}")
