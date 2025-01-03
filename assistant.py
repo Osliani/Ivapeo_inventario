@@ -25,9 +25,11 @@ class Assistant():
     
 	def __init__(self, name, assistant_id, end_point_tools):
 		self.client = OpenAI(api_key = os.getenv('OPENAI_API_KEY'))
+		self.TOOLS_URL = os.getenv('TOOLS_API_URL')
 		self.name = name
 		self.assistant_id = assistant_id
 		self.end_point_tools = end_point_tools
+		self.error_msg = "Ha ocurrido un error, por favor realice la consulta más tarde."
 	
 	
 	def create_thread(self):
@@ -59,7 +61,7 @@ class Assistant():
 		user_id -- phone number or telegram id (exclusive uses of tools)
 		thread_id -- unique identifier of the conversation
 	
-		Return: model response
+		Return: (model_response:str, status_code:str|False)
 		"""
 	
 		try:
@@ -85,23 +87,32 @@ class Assistant():
 					return self.get_response(message_object, thread_id), status
 
 				else:
-					if not user_id:
-						print("No se envió user_id")
-						return "Ha ocurrido un error, por favor realice la consulta más tarde.", False
-      
-					print("Tool calls!")
+					print("= "*50, "Tool calls!", " ="*50)
 					try:
 						tool = run.required_action.submit_tool_outputs.tool_calls[0]
 						print("Function Name:", tool.function.name)
-						print(f"Function Arguments: {tool.function.arguments}")
+						print("Function Arguments:", tool.function.arguments, sep='\n')
 
-						try:
-							response = requests.get(f"{self.end_point_tools}/{tool.function.name}/{tool.function.arguments}")
-							response.raise_for_status()
-							tool_ans = response.json()
-       
-						except requests.exceptions.RequestException as exc:
-							print(f"Error consumiendo de la API: {exc}")
+						if user_id:
+							try:
+								response = requests.post (
+									url = f"{self.TOOLS_URL}/{tool.function.name}/", 
+									headers = {'Content-Type': 'application/json'}, 
+									data = tool.function.arguments,
+								)
+								print(f"Código de respuesta de la API: {response.status_code}")
+								response.raise_for_status()
+								tool_ans = str(response.json())
+		
+							except requests.exceptions.RequestException as exc:
+								print(f"Error consumiendo de la API: {exc}")
+								status = "API_ERROR"
+								tool_ans = self.error_msg
+
+						else:
+							print("No se envió user_id")
+							status = "NO_USER_ID"
+							tool_ans = self.error_msg
 			
 						run = self.client.beta.threads.runs.submit_tool_outputs_and_poll(
 							thread_id = thread_id,
@@ -112,19 +123,30 @@ class Assistant():
 							}],
 						)
 						print(f"Respuesta de la herramienta enviada al modelo: {tool_ans}")
-						status = tool.function.name
+      
+						if status not in ["API_ERROR", "NO_USER_ID"]:
+							status = tool.function.name
 			
 					except Exception as exc:
-						print(f"Falló la respuesta de la herramienta: {exc}")
-						return "Ha ocurrido un error, por favor realice la consulta más tarde.", False
+						print(f"Falló la interacción con la herramienta: {exc}")
+						return self.error_msg, False
    
 		except Exception as exc:
 			print(f"Falló la respuesta del modelo: {exc}")
-			return "Ha ocurrido un error, por favor realice la consulta más tarde.", False
+			return self.error_msg, False
 
 
 if __name__ == "__main__":
-    args = {}
-    response = requests.get(f"http://127.0.0.1:8000/get_product_details/producto")
-    print(response.json())
+    args = {'product_name': 'producto'}
+    TOOLS_URL = os.getenv('TOOLS_API_URL')
+    
+    response = requests.post (
+        url = f"{TOOLS_URL}/get_product_details/", 
+        headers = {'Content-Type': 'application/json'}, 
+        data = json.dumps(args)
+    )
+    
+    print(response.status_code)
+    ans = response.json()
+    print(type(ans), ans, sep='\n')
     

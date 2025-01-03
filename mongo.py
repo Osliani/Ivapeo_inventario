@@ -6,6 +6,7 @@ import os
 load_dotenv()
 
 MONGO_URI = os.getenv('DATABASE_URL')
+MONGO_URI = "mongodb://localhost:27017"
 client = MongoClient(MONGO_URI)
 db = client['wa_ivapeo']
 threads_collection = db['threads']
@@ -36,16 +37,30 @@ def update_thread(user_id, thread_id):
     )
     
     
-def update_chat(user_id, role, message):
-    new_message = {
-        "role": role,
-        "message": message,
-    }
-    threads_collection.update_one(
-        {"user_id": user_id},
-        {"$push": {"messages": new_message}},
-        upsert=True
-    )
+def update_chat(user_id, role, message, status = "NO_STATUS"):
+    try:
+        if role == "Assistant":
+            new_message = {
+                "role": role,
+                "message": message,
+                "status": status,
+            }
+        else:
+            new_message = {
+                "role": role,
+                "message": message,
+            }
+            
+        threads_collection.update_one(
+            {"user_id": user_id},
+            {"$push": {"messages": new_message}},
+            upsert=True
+        )
+        return True
+    
+    except Exception as exc:
+        print(f"Error actualizando chat: {exc}")
+        return False
     
 
 def get_chat(user_id):

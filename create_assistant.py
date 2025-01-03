@@ -153,6 +153,7 @@ clean_messages = {
 
 
 if __name__ == "__main__":
+    
 	client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
     
 	assistant = client.beta.assistants.create (

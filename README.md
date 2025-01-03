@@ -1,21 +1,35 @@
 # Ivapeo_inventario
 
-## variables de entorno
-ODOO_URL =
-TOKEN_PATH =
-SEARCH_PATH = 
-CREATE_PATH =
- 
-ODOO_CLIENT_ID =
-ODOO_CLIENT_SECRET =
+## Instalación y ejecución
+`python3 -m venv venv`
 
-OPENAI_API_KEY =
+`source venv/bin/activate`
 
-TWILIO_ACCOUNT_SID = 
-TWILIO_AUTH_TOKEN =
+`pip install -r requirements.txt`
 
-IVAPEO_ASSISTANT_ID =
+`python3 bot.py`
 
-DATABASE_URL =
+## Variables de entorno
+ODOO_URL
 
-BOT_NUMBER =
+TOKEN_PATH
+
+SEARCH_PATH
+
+CREATE_PATH
+
+ODOO_CLIENT_ID
+
+ODOO_CLIENT_SECRET
+
+OPENAI_API_KEY
+
+TWILIO_ACCOUNT_SID
+
+TWILIO_AUTH_TOKEN
+
+IVAPEO_ASSISTANT_ID
+
+DATABASE_URL
+
+BOT_NUMBER
