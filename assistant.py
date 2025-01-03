@@ -19,16 +19,15 @@ class Assistant():
     
     Attributes:
         name (str): The name of the assistant.
-        assistant_id (str): The unique identifier for the assistant.
+        ASSISTANT_ID (str): The unique identifier for the assistant.
         end_point_tools (str): API endpoint that generates responses from external tools
     """
     
-	def __init__(self, name, assistant_id, end_point_tools):
+	def __init__(self, name, ASSISTANT_ID, TOOLS_API_URL):
 		self.client = OpenAI(api_key = os.getenv('OPENAI_API_KEY'))
-		self.TOOLS_URL = os.getenv('TOOLS_API_URL')
 		self.name = name
-		self.assistant_id = assistant_id
-		self.end_point_tools = end_point_tools
+		self.ASSISTANT_ID = ASSISTANT_ID
+		self.TOOLS_API_URL = TOOLS_API_URL
 		self.error_msg = "Ha ocurrido un error, por favor realice la consulta más tarde."
 	
 	
@@ -75,7 +74,7 @@ class Assistant():
 			)
 			run = self.client.beta.threads.runs.create (
 				thread_id = thread_id,
-				assistant_id = self.assistant_id,
+				ASSISTANT_ID = self.ASSISTANT_ID,
 			)
 
 			status = "NO_TOOL_CALLS"
@@ -96,7 +95,7 @@ class Assistant():
 						if user_id:
 							try:
 								response = requests.post (
-									url = f"{self.TOOLS_URL}/{tool.function.name}/{user_id}", 
+									url = f"{self.TOOLS_API_URL}/{tool.function.name}/{user_id}", 
 									headers = {'Content-Type': 'application/json'}, 
 									data = tool.function.arguments,
 								)
@@ -138,7 +137,7 @@ class Assistant():
 
 if __name__ == "__main__":
     args = {'product_name': 'producto'}
-    TOOLS_URL = os.getenv('TOOLS_API_URL')
+    TOOLS_API_URL = os.getenv('TOOLS_API_URL')
     
     response = requests.post (
         url = "http://127.0.0.1:8000/get_products/34936069261", 

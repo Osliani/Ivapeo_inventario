@@ -6,7 +6,7 @@ import os
 load_dotenv()
 
 MONGO_URI = os.getenv('DATABASE_URL')
-MONGO_URI = "mongodb://localhost:27017"
+#MONGO_URI = "mongodb://localhost:27017"
 client = MongoClient(MONGO_URI)
 db = client['wa_ivapeo']
 threads_collection = db['threads']
