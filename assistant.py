@@ -1,9 +1,12 @@
 from dotenv import load_dotenv
 from openai import OpenAI
 import requests
+from colorama import init, Fore, Style
 import time, json, os
 
 load_dotenv()
+
+init(autoreset = True)
 
 
 def pretty_print(messages):
@@ -74,7 +77,7 @@ class Assistant():
 			)
 			run = self.client.beta.threads.runs.create (
 				thread_id = thread_id,
-				ASSISTANT_ID = self.ASSISTANT_ID,
+				assistant_id = self.ASSISTANT_ID,
 			)
 
 			status = "NO_TOOL_CALLS"
@@ -86,7 +89,7 @@ class Assistant():
 					return self.get_response(message_object, thread_id), status
 
 				else:
-					print("= "*50, "Tool calls!", " ="*50)
+					print(Fore.BLUE + "="*25, " Tool calls! ", "="*25)
 					try:
 						tool = run.required_action.submit_tool_outputs.tool_calls[0]
 						print("Function Name:", tool.function.name)
@@ -99,17 +102,17 @@ class Assistant():
 									headers = {'Content-Type': 'application/json'}, 
 									data = tool.function.arguments,
 								)
-								print(f"Código de respuesta de la API: {response.status_code}")
+								print(Fore.GREEN + f"Código de respuesta de la API: {response.status_code}")
 								response.raise_for_status()
 								tool_ans = str(response.json())
 		
 							except requests.exceptions.RequestException as exc:
-								print(f"Error consumiendo de la API: {exc}")
+								print(Fore.RED + f"Error consumiendo de la API: {exc}")
 								status = "API_ERROR"
 								tool_ans = self.error_msg
 
 						else:
-							print("No se envió user_id")
+							print(Fore.RED + "No se envió user_id")
 							status = "NO_USER_ID"
 							tool_ans = self.error_msg
 			
@@ -127,11 +130,11 @@ class Assistant():
 							status = tool.function.name
 			
 					except Exception as exc:
-						print(f"Falló la interacción con la herramienta: {exc}")
+						print(Fore.RED + f"Falló la interacción con la herramienta: {exc}")
 						return self.error_msg, False
    
 		except Exception as exc:
-			print(f"Falló la respuesta del modelo: {exc}")
+			print(Fore.RED + f"Falló la respuesta del modelo: {exc}")
 			return self.error_msg, False
 
 
