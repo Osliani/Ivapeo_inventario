@@ -36,17 +36,17 @@ def crear_app():
         
         try:
             TOOLS_API_URL = os.getenv('TOOLS_API_URL')
-            #TOOLS_API_URL = "http://127.0.0.1:8000"
+            TOOLS_API_URL = "http://127.0.0.1:8000"
             jumo_bot = Assistant('IVAPEO_BOT', IVAPEO_ASSISTANT_ID, TOOLS_API_URL)
-            ans, status = jumo_bot.submit_message(incoming_msg, user_number, thread_id)
-            print(Fore.BLUE + status)
+            ans, tools_called = jumo_bot.submit_message(incoming_msg, user_number, thread_id)
+            print(Fore.BLUE + f"{tools_called}")
             
         except Exception as error:
             print(Fore.RED + f"Error: {error}")
             utils.send_twilio_message("Ha ocurrido un error. Por favor, realice la consulta más tarde.", BOT_NUMBER, user_number)
             return str(MessagingResponse())
         
-        mongo.update_chat(user_number, "Assistant", ans, status)
+        mongo.update_chat(user_number, "Assistant", ans, tools_called)
         
         if len(ans) > WORDS_LIMIT:
             print(Fore.YELLOW + "Respuesta recortada por exceder el límite de Twilio.")

@@ -6,7 +6,7 @@ import os
 load_dotenv()
 
 MONGO_URI = os.getenv('DATABASE_URL')
-#MONGO_URI = "mongodb://localhost:27017"
+MONGO_URI = "mongodb://localhost:27017"
 client = MongoClient(MONGO_URI)
 db = client['wa_ivapeo']
 threads_collection = db['threads']
@@ -37,13 +37,13 @@ def update_thread(user_id, thread_id):
     )
     
     
-def update_chat(user_id, role, message, status = "NO_STATUS"):
+def update_chat(user_id, role, message, tools_called = []):
     try:
         if role == "Assistant":
             new_message = {
                 "role": role,
                 "message": message,
-                "status": status,
+                "status": tools_called,
             }
         else:
             new_message = {
