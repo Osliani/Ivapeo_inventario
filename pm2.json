@@ -1,0 +1,13 @@
+{
+    "apps": [
+      {
+        "name": "whatsapp_ivapeo",
+        "script": "./bot.py",
+        "interpreter": "python3",
+        "env": {
+          "ENVIRONMENT": "production",
+          "PORT": 3032
+        }
+      }
+    ]
+}
