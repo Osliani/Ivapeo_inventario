@@ -36,7 +36,9 @@ def crear_app():
         
         try:
             TOOLS_API_URL = os.getenv('TOOLS_API_URL')
-            TOOLS_API_URL = "http://127.0.0.1:8000"
+            if os.getenv('ENVIRONMENT') == 'dev':
+                TOOLS_API_URL = "http://127.0.0.1:8000"
+
             jumo_bot = Assistant('IVAPEO_BOT', IVAPEO_ASSISTANT_ID, TOOLS_API_URL)
             ans, tools_called = jumo_bot.submit_message(incoming_msg, user_number, thread_id)
             print(Fore.BLUE + f"{tools_called}")
@@ -62,6 +64,9 @@ def crear_app():
 if __name__ == '__main__':
     app = crear_app()
     PORT = os.getenv('PORT')
+    if os.getenv('ENVIRONMENT') == 'dev':
+        print(Fore.YELLOW + "Ejecutando en entorno de desarrollo")
+
     print("Bot Online en el puerto " + Fore.BLUE + PORT)
     serve(app, host = "0.0.0.0", port = PORT)
     
